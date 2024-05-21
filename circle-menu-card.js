@@ -1,7 +1,7 @@
 class CircleMenuCard extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
   connectedCallback() {
@@ -14,7 +14,7 @@ class CircleMenuCard extends HTMLElement {
       !Array.isArray(config.items) ||
       config.items.length === 0
     ) {
-      throw new Error("You need to define an array of items");
+      throw new Error('You need to define an array of items');
     }
 
     this._config = config;
@@ -42,9 +42,9 @@ class CircleMenuCard extends HTMLElement {
           width: 3.5em;
           height: 3.5em;
           border-radius: 50%;
-          background-color: ${_config.button_color || "#03A9F4"};
+          background-color: ${_config.button_color || '#03A9F4'};
           box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-          color: ${_config.icon_color || "white"} !important;
+          color: ${_config.icon_color || 'white'} !important;
           text-align: center;
           line-height: 2.6;
           cursor: pointer;
@@ -57,7 +57,7 @@ class CircleMenuCard extends HTMLElement {
           box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
         }
         .circular-menu menu ha-icon, .circular-menu menu ha-icon ha-svg-icon {
-          fill: ${_config.icon_color || "white"};
+          fill: ${_config.icon_color || 'white'};
         }
         .circular-menu .floating-btn ha-icon {
           font-size: 1.3em;
@@ -76,7 +76,7 @@ class CircleMenuCard extends HTMLElement {
           top: 0;
           right: 0;
           z-index: -2;
-          background-color: ${_config.menu_background_color || "#03A9F4"};
+          background-color: ${_config.menu_background_color || '#03A9F4'};
           transition: all .3s ease;
         }
         .circular-menu.active:after {
@@ -127,7 +127,7 @@ class CircleMenuCard extends HTMLElement {
           left: 1em;
         }
         .circular-menu.circular-menu-left .floating-btn, .circular-menu.circular-menu-left:after {
-          background-color: ${_config.menu_background_color || "#03A9F4"};
+          background-color: ${_config.menu_background_color || '#03A9F4'};
         }
         .circular-menu.circular-menu-left.active .floating-btn a {
           transform: rotate(45deg);
@@ -162,7 +162,9 @@ class CircleMenuCard extends HTMLElement {
       item.classList.add('menu-item');
       item.innerHTML = `<ha-icon icon="${itemConfig.icon}"></ha-icon>`;
       item.title = itemConfig.alt || `Item ${index + 1}`;
-      item.addEventListener('click', () => this._handleAction(itemConfig.action));
+      item.addEventListener('click', () =>
+        this._handleAction(itemConfig.action),
+      );
       container.appendChild(item);
     });
 
