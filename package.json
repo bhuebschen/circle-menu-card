@@ -1,0 +1,78 @@
+{
+  "name": "@bhuebschen/circle-menu-card",
+  "version": "1.0.0",
+  "description": "Circle menu for Home Assistant Lovelace UI",
+  "main": "dist/circle-menu-card.js",
+  "scripts": {
+    "format": "prettier --write .",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "home-assistant",
+    "homeassistant",
+    "hass",
+    "automation",
+    "lovelace",
+    "custom-cards",
+    "circle-menu"
+  ],
+  "author": "Benedikt Hübschen <benedikt@huebschen.wtf> (https://huebschen.wtf/)",
+  "license": "MIT",
+  "dependencies": {
+    "custom-card-helpers": "^1.6.4",
+    "ha-template": "^1.2.2",
+    "home-assistant-js-websocket": "^9.2.1",
+    "lit": "^2.0.0",
+    "lodash": "^4.17.21",
+    "prettier": "^3.2.5"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not dead"
+  ],
+  "prettier": {
+    "singleQuote": true
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "angular",
+          "releaseRules": [
+            {
+              "type": "chore",
+              "scope": "deps",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "dist/lawn-mower-card.js",
+              "label": "lawn-mower-card.js"
+            }
+          ]
+        }
+      ],
+      "@semantic-release/git"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhuebschen/circle-menu-card.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bhuebschen/circle-menu-card/issues"
+  },
+  "homepage": "https://github.com/bhuebschen/circle-menu-card#readme"
+}
