@@ -3,8 +3,7 @@
 [![hacs][hacs-image]][hacs-url]
 [![GitHub Sponsors][gh-sponsors-image]][gh-sponsors-url]
 
-![preview]]
-
+![preview]
 
 The Circle Menu Card is a custom Lovelace card for Home Assistant that allows you to create a circular menu of actions or shortcuts. This card provides a visually appealing way to access common actions or navigate to different parts of your Home Assistant dashboard.
 
@@ -22,7 +21,7 @@ The Circle Menu Card is a custom Lovelace card for Home Assistant that allows yo
 1. Select `Frontend`
 1. Press add icon and search for `Circle Menu Card`
 1. Select PM Index Card repo and install
-1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>)
+1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd> / (<kbd>Shift</kbd> +) <kbd>⌘</kbd> + <kbd>R</kbd>)
 1. Add pm-index-card to your page
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MelleD&repository=pm-index-card&category=plugin)
@@ -35,7 +34,7 @@ The Circle Menu Card is a custom Lovelace card for Home Assistant that allows yo
 1. Add a new resource
    1. Url = `/local/circle-menu-card.js.js`
    1. Resource type = `module`
-1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>)
+1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd> / (<kbd>Shift</kbd> +) <kbd>⌘</kbd> + <kbd>R</kbd>)
 1. Add circle-menu-card to your page
 
 ### Configuration:
@@ -47,7 +46,7 @@ left: true # Position the menu on the left
 icon: 'mdi:menu' # Floating button icon
 button_color: '#3498db' # Button background color
 icon_color: 'white' # Icon color
-item_background_color: '#ddd' # Menu item background color
+menu_background_color: '#3498db' # Menu background color
 items:
   - icon: 'mdi:lightbulb'
     alt: 'Light Control'
@@ -83,7 +82,7 @@ items:
 - The Circle Menu Card is inspired by various circular menu implementations and is built as a custom Lovelace card for Home Assistant.
 
 ### Issues & Contributions:
-If you encounter any issues or have suggestions for improvements, feel free to [open an issue](https://github.com/bhuebschen/circle.menu-card/issues) or submit a pull request.
+If you encounter any issues or have suggestions for improvements, feel free to [open an issue](https://github.com/bhuebschen/circle-menu-card/issues) or submit a pull request.
 
 ## License
 
