@@ -163,9 +163,20 @@ class CircleMenuCard extends HTMLElement {
       item.classList.add('menu-item');
       item.innerHTML = `<ha-icon icon="${itemConfig.icon}"></ha-icon>`;
       item.title = itemConfig.alt || `Item ${index + 1}`;
-      item.addEventListener('click', () =>
-        this._handleAction(itemConfig.action),
-      );
+
+      item.addEventListener('click', () => {
+        if (itemConfig.action.action === 'navigate' && itemConfig.action.navigation_path) {
+            history.pushState(null, '', itemConfig.action.navigation_path);
+            const event = new Event('location-changed', {
+                bubbles: true,
+                composed: true
+            });
+            window.dispatchEvent(event);
+        } else if (itemConfig.action.action === 'call-service' && itemConfig.action.service) {
+            this.hass.callService(itemConfig.action.service.split('.')[0], itemConfig.action.service.split('.')[1], itemConfig.action.service_data || {});
+        }
+      });
+
       container.appendChild(item);
     });
 
