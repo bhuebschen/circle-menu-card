@@ -201,9 +201,31 @@ class CircleMenuCard extends HTMLElement {
     this._hass = hass;
   }
 
+  static getStubConfig() {
+      return {
+          left: false,
+          icon: 'mdi:menu',
+          button_color: '#3498db',
+          icon_color: 'white',
+          item_background_color: '#3498db',
+          items: [
+              { icon: 'mdi:lightbulb', alt: 'Light Control', action: { action: 'call-service', service: 'light.turn_on', service_data: { entity_id: 'light.living_room' } } }
+          ]
+      };
+  }
+
   getCardSize() {
     return 0; // This card doesn't occupy any space
   }
 }
 
 customElements.define('circle-menu-card', CircleMenuCard);
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: 'circle-menu-card',
+    name: 'Circle Menu Card',
+    description: 'A customizable floating circular menu card with actions.',
+    preview: false,
+    documentationURL: "https://github.com/bhuebschen/circle-menu-card",
+  });

@@ -42,7 +42,7 @@ Here's an example configuration for the Circle Menu Card:
 
 ```yaml
 type: 'custom:circle-menu-card'
-left: true # Position the menu on the left
+left: false # Position the menu on the left
 icon: 'mdi:menu' # Floating button icon
 button_color: '#3498db' # Button background color
 icon_color: 'white' # Icon color
