@@ -81,7 +81,7 @@ class CircleMenuCard extends HTMLElement {
           transition: all .3s ease;
         }
         .circular-menu.active:after {
-          transform: scale3d(5.5, 5.5, 1);
+          transform: scale(5.5, 5.5);
           transition-timing-function: cubic-bezier(0.68, 1.55, 0.265, 1);
         }
         .circular-menu .items-wrapper {
