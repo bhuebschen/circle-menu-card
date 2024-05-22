@@ -36,6 +36,7 @@ class CircleMenuCard extends HTMLElement {
           display: flex;
           flex-direction: column;
           align-items: center;
+          z-index: 1024;
         }
         .circular-menu .floating-btn {
           display: block;
