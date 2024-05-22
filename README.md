@@ -20,11 +20,11 @@ The Circle Menu Card is a custom Lovelace card for Home Assistant that allows yo
 1. Add this repository (https://github.com/bhuebschen/circle-menu-card) via HACS Custom repositories [How to add Custom Repositories](https://hacs.xyz/docs/faq/custom_repositories/)
 1. Select `Frontend`
 1. Press add icon and search for `Circle Menu Card`
-1. Select PM Index Card repo and install
+1. Select Circle Menu Card repo and install
 1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd> / (<kbd>Shift</kbd> +) <kbd>⌘</kbd> + <kbd>R</kbd>)
-1. Add pm-index-card to your page
+1. Add circle-menu-card to your page
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=MelleD&repository=pm-index-card&category=plugin)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=bhuebschen&repository=circle-menu-card&category=plugin)
 
 ### Manual
 
@@ -48,14 +48,33 @@ button_color: '#3498db' # Button background color
 icon_color: 'white' # Icon color
 menu_background_color: '#3498db' # Menu background color
 items:
-  - icon: 'mdi:lightbulb'
-    alt: 'Light Control'
+  - icon: mdi:lightbulb
+    alt: Lights on...
     action:
-      action: 'call-service'
-      service: 'light.turn_on'
+      action: call-service
+      service: light.turn_on
       service_data:
-        entity_id: 'light.living_room'
-  # Add up to 4 menu items here...
+        entity_id: light.living_room
+  - icon: mdi:thermometer
+    alt: Default Dashboard
+    action:
+      action: navigate
+      navigation_path: /lovelace/0
+  - icon: mdi:music
+    alt: Music Control
+    action:
+      action: call-service
+      service: media_player.media_play_pause
+      service_data:
+        entity_id: media_player.living_room
+  - icon: mdi:fan
+    alt: Fan Control
+    action:
+      action: call-service
+      service: fan.turn_on
+      service_data:
+        entity_id: fan.living_room
+  # Up to 4 menu items...
 ```
 ### Options:
 
