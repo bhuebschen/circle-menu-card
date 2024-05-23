@@ -1,11 +1,28 @@
 class CircleMenuCard extends HTMLElement {
+  static get properties() {
+    return {
+      _config: {},
+      _hass: {},
+    };
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._menuListenersAttached = false;
   }
 
   connectedCallback() {
     this.render();
+    if (!this._menuListenersAttached) {
+      this.setupMenuListener();
+      this._menuListenersAttached = true;
+    }
+  }
+
+  disconnectedCallback() {
+    this.removeMenuListener();
+    this._menuListenersAttached = false;
   }
 
   setConfig(config) {
@@ -104,6 +121,7 @@ class CircleMenuCard extends HTMLElement {
           line-height: 2.8;
           background-color: rgba(0, 0, 0, 0.1);
           transition: transform .3s ease, background .2s ease;
+          cursor: pointer;
         }
         .circular-menu .menu-item:hover {
           background-color: rgba(0, 0, 0, 0.3);
@@ -155,8 +173,6 @@ class CircleMenuCard extends HTMLElement {
     `;
 
     const container = this.shadowRoot.querySelector('.items-wrapper');
-    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
-    const circularMenu = this.shadowRoot.querySelector('#circularMenu');
 
     _config.items.slice(0, 4).forEach((itemConfig, index) => {
       const item = document.createElement('div');
@@ -165,24 +181,29 @@ class CircleMenuCard extends HTMLElement {
       item.title = itemConfig.alt || `Item ${index + 1}`;
 
       item.addEventListener('click', () => {
-        if (itemConfig.action.action === 'navigate' && itemConfig.action.navigation_path) {
-            history.pushState(null, '', itemConfig.action.navigation_path);
-            const event = new Event('location-changed', {
-                bubbles: true,
-                composed: true
-            });
-            window.dispatchEvent(event);
-        } else if (itemConfig.action.action === 'call-service' && itemConfig.action.service) {
-            this.hass.callService(itemConfig.action.service.split('.')[0], itemConfig.action.service.split('.')[1], itemConfig.action.service_data || {});
+        if (
+          itemConfig.action.action === 'navigate' &&
+          itemConfig.action.navigation_path
+        ) {
+          history.pushState(null, '', itemConfig.action.navigation_path);
+          const event = new Event('location-changed', {
+            bubbles: true,
+            composed: true,
+          });
+          window.dispatchEvent(event);
+        } else if (
+          itemConfig.action.action === 'call-service' &&
+          itemConfig.action.service
+        ) {
+          this.hass.callService(
+            itemConfig.action.service.split('.')[0],
+            itemConfig.action.service.split('.')[1],
+            itemConfig.action.service_data || {},
+          );
         }
       });
 
       container.appendChild(item);
-    });
-
-    floatingBtn.addEventListener('click', () => {
-      circularMenu.classList.toggle('active');
-      container.classList.toggle('hidden');
     });
   }
 
@@ -197,21 +218,170 @@ class CircleMenuCard extends HTMLElement {
     }
   }
 
-  set hass(hass) {
-    this._hass = hass;
+  setupMenuListener() {
+    const container = this.shadowRoot.querySelector('.items-wrapper');
+    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
+    const circularMenu = this.shadowRoot.querySelector('#circularMenu');
+    let timeoutId;
+
+    const closeMenu = () => {
+      circularMenu.classList.remove('active');
+      container.classList.add('hidden');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    const startCloseTimer = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(closeMenu, 3000);
+    };
+
+    this._floatingBtnClickListener = (event) => {
+      event.stopPropagation();
+
+      const isActive = circularMenu.classList.contains('active');
+      closeMenu();
+
+      if (!isActive) {
+        circularMenu.classList.add('active');
+        container.classList.remove('hidden');
+        startCloseTimer();
+      }
+    };
+
+    this._containerClickListener = (event) => {
+      event.stopPropagation();
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    };
+
+    this._containerMouseEnterListener = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    this._containerMouseLeaveListener = () => {
+      startCloseTimer();
+    };
+
+    this._documentClickListener = (event) => {
+      if (!circularMenu.contains(event.target)) {
+        closeMenu();
+      }
+    };
+
+    floatingBtn.addEventListener('click', this._floatingBtnClickListener);
+    container.addEventListener('click', this._containerClickListener);
+    container.addEventListener('mouseenter', this._containerMouseEnterListener);
+    container.addEventListener('mouseleave', this._containerMouseLeaveListener);
+    document.addEventListener('click', this._documentClickListener);
   }
 
+  removeMenuListener() {
+    const container = this.shadowRoot.querySelector('.items-wrapper');
+    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
+
+    if (floatingBtn) {
+      floatingBtn.removeEventListener('click', this._floatingBtnClickListener);
+    }
+    if (container) {
+      container.removeEventListener('click', this._containerClickListener);
+      container.removeEventListener(
+        'mouseenter',
+        this._containerMouseEnterListener,
+      );
+      container.removeEventListener(
+        'mouseleave',
+        this._containerMouseLeaveListener,
+      );
+    }
+    document.removeEventListener('click', this._documentClickListener);
+  }
+
+  // setupMenuListener() {
+  //   const container = this.shadowRoot.querySelector('.items-wrapper');
+  //   const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
+  //   const circularMenu = this.shadowRoot.querySelector('#circularMenu');
+  //   let timeoutId;
+
+  //   const closeMenu = () => {
+  //     circularMenu.classList.remove('active');
+  //     container.classList.add('hidden');
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId);
+  //       timeoutId = null;
+  //     }
+  //   };
+
+  //   const startCloseTimer = () => {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId);
+  //     }
+  //     timeoutId = setTimeout(closeMenu, 3000);
+  //   };
+
+  //   floatingBtn.addEventListener('click', (event) => {
+  //     event.stopPropagation();
+
+  //     const isActive = circularMenu.classList.contains('active');
+  //     closeMenu();
+
+  //     if (!isActive) {
+  //       circularMenu.classList.add('active');
+  //       container.classList.remove('hidden');
+  //       startCloseTimer();
+  //     }
+  //   });
+
+  //   container.addEventListener('click', (event) => {
+  //     event.stopPropagation();
+  //     clearTimeout(timeoutId);
+  //     timeoutId = null;
+  //   });
+
+  //   container.addEventListener('mouseenter', () => {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId);
+  //       timeoutId = null;
+  //     }
+  //   });
+
+  //   container.addEventListener('mouseleave', () => {
+  //     startCloseTimer();
+  //   });
+
+  //   document.addEventListener('click', (event) => {
+  //     if (!circularMenu.contains(event.target)) {
+  //       closeMenu();
+  //     }
+  //   });
+  // }
+
   static getStubConfig() {
-      return {
-          left: false,
-          icon: 'mdi:menu',
-          button_color: '#3498db',
-          icon_color: 'white',
-          item_background_color: '#3498db',
-          items: [
-              { icon: 'mdi:lightbulb', alt: 'Light Control', action: { action: 'call-service', service: 'light.turn_on', service_data: { entity_id: 'light.living_room' } } }
-          ]
-      };
+    return {
+      left: false,
+      icon: 'mdi:menu',
+      button_color: '#3498db',
+      icon_color: 'white',
+      item_background_color: '#3498db',
+      items: [
+        {
+          icon: 'mdi:lightbulb',
+          alt: 'Light Control',
+          action: {
+            action: 'call-service',
+            service: 'light.turn_on',
+            service_data: { entity_id: 'light.living_room' },
+          },
+        },
+      ],
+    };
   }
 
   getCardSize() {
@@ -223,9 +393,9 @@ customElements.define('circle-menu-card', CircleMenuCard);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-    type: 'circle-menu-card',
-    name: 'Circle Menu Card',
-    description: 'A customizable floating circular menu card with actions.',
-    preview: false,
-    documentationURL: "https://github.com/bhuebschen/circle-menu-card",
-  });
+  type: 'circle-menu-card',
+  name: 'Circle Menu Card',
+  description: 'A customizable floating circular menu card with actions.',
+  preview: false,
+  documentationURL: 'https://github.com/bhuebschen/circle-menu-card',
+});
