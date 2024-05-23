@@ -304,72 +304,13 @@ class CircleMenuCard extends HTMLElement {
     document.removeEventListener('click', this._documentClickListener);
   }
 
-  // setupMenuListener() {
-  //   const container = this.shadowRoot.querySelector('.items-wrapper');
-  //   const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
-  //   const circularMenu = this.shadowRoot.querySelector('#circularMenu');
-  //   let timeoutId;
-
-  //   const closeMenu = () => {
-  //     circularMenu.classList.remove('active');
-  //     container.classList.add('hidden');
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //       timeoutId = null;
-  //     }
-  //   };
-
-  //   const startCloseTimer = () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //     timeoutId = setTimeout(closeMenu, 3000);
-  //   };
-
-  //   floatingBtn.addEventListener('click', (event) => {
-  //     event.stopPropagation();
-
-  //     const isActive = circularMenu.classList.contains('active');
-  //     closeMenu();
-
-  //     if (!isActive) {
-  //       circularMenu.classList.add('active');
-  //       container.classList.remove('hidden');
-  //       startCloseTimer();
-  //     }
-  //   });
-
-  //   container.addEventListener('click', (event) => {
-  //     event.stopPropagation();
-  //     clearTimeout(timeoutId);
-  //     timeoutId = null;
-  //   });
-
-  //   container.addEventListener('mouseenter', () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //       timeoutId = null;
-  //     }
-  //   });
-
-  //   container.addEventListener('mouseleave', () => {
-  //     startCloseTimer();
-  //   });
-
-  //   document.addEventListener('click', (event) => {
-  //     if (!circularMenu.contains(event.target)) {
-  //       closeMenu();
-  //     }
-  //   });
-  // }
-
   static getStubConfig() {
     return {
       left: false,
       icon: 'mdi:menu',
       button_color: '#3498db',
       icon_color: 'white',
-      item_background_color: '#3498db',
+      menu_background_color: '#3498db',
       items: [
         {
           icon: 'mdi:lightbulb',
