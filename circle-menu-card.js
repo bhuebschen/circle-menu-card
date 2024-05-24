@@ -14,7 +14,6 @@ class CircleMenuCard extends HTMLElement {
 
   connectedCallback() {
     this.render();
-
     if (!this._menuListenersAttached) {
       this.setupMenuListener();
       this._menuListenersAttached = true;
@@ -347,7 +346,7 @@ window.customCards.push({
 });
 
 console.info(
-  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.1   ',
+  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.2   ',
   'color: white; background: #3498db; font-weight: bold; padding: 5px 0;',
   'color: white; background: #333; font-weight: bold; padding: 5px 0;',
 );
