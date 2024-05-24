@@ -1,5 +1,4 @@
 class CircleMenuCard extends HTMLElement {
-
   static get properties() {
     return {
       _config: {},
@@ -10,19 +9,21 @@ class CircleMenuCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._menuListenersAttached = false;
   }
+
   connectedCallback() {
     this.render();
 
-    window.addEventListener('click', (event) => {
-      const circularMenu = this.shadowRoot.querySelector('#circularMenu');
-      const container = this.shadowRoot.querySelector('.items-wrapper');
+    if (!this._menuListenersAttached) {
+      this.setupMenuListener();
+      this._menuListenersAttached = true;
+    }
+  }
 
-      if (!event.composedPath().includes(circularMenu)) {
-        circularMenu.classList.remove('active');
-        container.classList.add('hidden');
-      }
-    });
+  disconnectedCallback() {
+    this.removeMenuListener();
+    this._menuListenersAttached = false;
   }
 
   setConfig(config) {
@@ -37,6 +38,7 @@ class CircleMenuCard extends HTMLElement {
     this._config = config;
     this.render();
   }
+
   render() {
     if (!this.shadowRoot) return;
 
@@ -165,8 +167,6 @@ class CircleMenuCard extends HTMLElement {
     `;
 
     const container = this.shadowRoot.querySelector('.items-wrapper');
-    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
-    const circularMenu = this.shadowRoot.querySelector('#circularMenu');
 
     const itemAngle = 140 / _config.items.length;
     const angleOffset = [47, 6, -1, -7][_config.items.length - 1];
@@ -179,8 +179,7 @@ class CircleMenuCard extends HTMLElement {
       item.innerHTML = `<ha-icon icon="${itemConfig.icon}"></ha-icon>`;
       item.title = itemConfig.alt || `Item ${index + 1}`;
 
-      // Calculate the position
-      const radius = 7; // Adjust as necessary
+      const radius = 7;
       let x = radius * Math.cos((angle * Math.PI) / 180);
       let y = radius * Math.sin((angle * Math.PI) / 180);
       if (!_config.left) x = -x;
@@ -212,11 +211,6 @@ class CircleMenuCard extends HTMLElement {
 
       container.appendChild(item);
     });
-
-    floatingBtn.addEventListener('click', () => {
-      circularMenu.classList.toggle('active');
-      container.classList.toggle('hidden');
-    });
   }
 
   _handleAction(actionConfig) {
@@ -230,8 +224,90 @@ class CircleMenuCard extends HTMLElement {
     }
   }
 
-  set hass(hass) {
-    this._hass = hass;
+  setupMenuListener() {
+    const container = this.shadowRoot.querySelector('.items-wrapper');
+    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
+    const circularMenu = this.shadowRoot.querySelector('#circularMenu');
+    let timeoutId;
+
+    const closeMenu = () => {
+      circularMenu.classList.remove('active');
+      container.classList.add('hidden');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    const startCloseTimer = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(closeMenu, 3000);
+    };
+
+    this._floatingBtnClickListener = (event) => {
+      event.stopPropagation();
+
+      const isActive = circularMenu.classList.contains('active');
+      closeMenu();
+
+      if (!isActive) {
+        circularMenu.classList.add('active');
+        container.classList.remove('hidden');
+        startCloseTimer();
+      }
+    };
+
+    this._containerClickListener = (event) => {
+      event.stopPropagation();
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    };
+
+    this._containerMouseEnterListener = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    this._containerMouseLeaveListener = () => {
+      startCloseTimer();
+    };
+
+    this._documentClickListener = (event) => {
+      if (!circularMenu.contains(event.target)) {
+        closeMenu();
+      }
+    };
+
+    floatingBtn.addEventListener('click', this._floatingBtnClickListener);
+    container.addEventListener('click', this._containerClickListener);
+    container.addEventListener('mouseenter', this._containerMouseEnterListener);
+    container.addEventListener('mouseleave', this._containerMouseLeaveListener);
+    document.addEventListener('click', this._documentClickListener);
+  }
+
+  removeMenuListener() {
+    const container = this.shadowRoot.querySelector('.items-wrapper');
+    const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
+
+    if (floatingBtn) {
+      floatingBtn.removeEventListener('click', this._floatingBtnClickListener);
+    }
+    if (container) {
+      container.removeEventListener('click', this._containerClickListener);
+      container.removeEventListener(
+        'mouseenter',
+        this._containerMouseEnterListener,
+      );
+      container.removeEventListener(
+        'mouseleave',
+        this._containerMouseLeaveListener,
+      );
+    }
+    document.removeEventListener('click', this._documentClickListener);
   }
 
   static getStubConfig() {
