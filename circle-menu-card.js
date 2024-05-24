@@ -273,7 +273,10 @@ class CircleMenuCard extends HTMLElement {
     };
 
     this._containerMouseLeaveListener = () => {
-      startCloseTimer();
+      container.classList.remove('hidden');
+      if ('auto_close' in this._config) {
+        startCloseTimer();
+      }
     };
 
     this._documentClickListener = (event) => {
