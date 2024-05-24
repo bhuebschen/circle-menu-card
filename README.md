@@ -85,6 +85,7 @@ items:
 | `button_color`         | Background color of the floating button                                                               | `'#3498db'`                  |
 | `icon_color`           | Color of the icon on the floating button                                                              | `'white'`                    |
 | `menu_background_color`| Background color of the menu                                                                    | `'#3498db'`                     |
+| `auto_close`           | Closes the menu after a timeout in milliseconds                                                                    | ``                     |
 | `items`                | Array of menu items. Each item should contain `icon`, `alt`, and `action` properties.                  | `[]`                         |
 | `items[].icon`         | Icon for the menu item                                                                                | `''`                         |
 | `items[].alt`          | Alt text for the menu item                                                                            | `''`                         |
