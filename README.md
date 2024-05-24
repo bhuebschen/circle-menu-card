@@ -82,9 +82,9 @@ items:
 |------------------------|-------------------------------------------------------------------------------------------------------|------------------------------|
 | `left`                 | Whether to position the menu on the left side of the screen                                           | `false`                      |
 | `icon`                 | The icon to be displayed on the floating button                                                       | `'mdi:menu'`                 |
-| `button_color`         | Background color of the floating button                                                               | `'#3498db'`                  |
-| `icon_color`           | Color of the icon on the floating button                                                              | `'white'`                    |
-| `menu_background_color`| Background color of the menu                                                                    | `'#3498db'`                     |
+| `button_color`         | Background color of the floating button                                                               | var(--primary-color)                  |
+| `icon_color`           | Color of the icon on the floating button                                                              | var(--text-primary-color)                    |
+| `menu_background_color`| Background color of the menu                                                                    | var(--primary-color)                     |
 | `auto_close`           | Closes the menu after a timeout in milliseconds                                                                    | ``                     |
 | `items`                | Array of menu items. Each item should contain `icon`, `alt`, and `action` properties.                  | `[]`                         |
 | `items[].icon`         | Icon for the menu item                                                                                | `''`                         |
