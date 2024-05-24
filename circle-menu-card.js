@@ -243,7 +243,7 @@ class CircleMenuCard extends HTMLElement {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      timeoutId = setTimeout(closeMenu, 3000);
+      timeoutId = setTimeout(closeMenu, this._config.auto_close);
     };
 
     this._floatingBtnClickListener = (event) => {
@@ -255,7 +255,9 @@ class CircleMenuCard extends HTMLElement {
       if (!isActive) {
         circularMenu.classList.add('active');
         container.classList.remove('hidden');
-        startCloseTimer();
+        if ('auto_close' in this._config) {
+          startCloseTimer();
+        }
       }
     };
 
