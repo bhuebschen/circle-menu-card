@@ -166,7 +166,6 @@ class CircleMenuCard extends HTMLElement {
     `;
 
     const container = this.shadowRoot.querySelector('.items-wrapper');
-
     const itemAngle = 140 / _config.items.length;
     const angleOffset = [47, 6, -1, -7][_config.items.length - 1];
 
