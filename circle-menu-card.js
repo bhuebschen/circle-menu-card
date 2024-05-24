@@ -43,6 +43,12 @@ class CircleMenuCard extends HTMLElement {
 
     const { _config } = this;
     const leftMenuEnabled = _config.left ? ' circular-menu-left' : '';
+    const primaryColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--primary-color')
+      .trim();
+    const textPrimaryColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--text-primary-color')
+      .trim();
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -60,9 +66,9 @@ class CircleMenuCard extends HTMLElement {
           width: 3.5em;
           height: 3.5em;
           border-radius: 50%;
-          background-color: ${_config.button_color || '#03A9F4'};
+          background-color: ${_config.button_color || primaryColor};
           box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-          color: ${_config.icon_color || 'white'} !important;
+          color: ${_config.icon_color || textPrimaryColor} !important;
           text-align: center;
           line-height: 2.6;
           cursor: pointer;
@@ -75,7 +81,7 @@ class CircleMenuCard extends HTMLElement {
           box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
         }
         .circular-menu menu ha-icon, .circular-menu menu ha-icon ha-svg-icon {
-          fill: ${_config.icon_color || 'white'};
+          fill: ${_config.icon_color || textPrimaryColor};
         }
         .circular-menu .floating-btn ha-icon {
           font-size: 1.3em;
@@ -94,7 +100,7 @@ class CircleMenuCard extends HTMLElement {
           top: 0;
           right: 0;
           z-index: -2;
-          background-color: ${_config.menu_background_color || '#03A9F4'};
+          background-color: ${_config.menu_background_color || primaryColor};
           transition: all .3s ease;
         }
         .circular-menu.active:after {
@@ -129,56 +135,54 @@ class CircleMenuCard extends HTMLElement {
         .circular-menu.active .menu-item {
           transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .circular-menu.active .menu-item:nth-child(1) {
-          transform: translate3d(1em, -7em, 0);
-        }
-        .circular-menu.active .menu-item:nth-child(2) {
-          transform: translate3d(-3.5em, -6.3em, 0);
-        }
-        .circular-menu.active .menu-item:nth-child(3) {
-          transform: translate3d(-6.5em, -3.2em, 0);
-        }
-        .circular-menu.active .menu-item:nth-child(4) {
-          transform: translate3d(-7em, 1em, 0);
-        }
         .circular-menu.circular-menu-left {
           right: auto;
           left: 1em;
         }
         .circular-menu.circular-menu-left .floating-btn, .circular-menu.circular-menu-left:after {
-          background-color: ${_config.menu_background_color || '#03A9F4'};
+          background-color: ${_config.menu_background_color || primaryColor};
         }
         .circular-menu.circular-menu-left.active .floating-btn a {
           transform: rotate(45deg);
         }
-        .circular-menu.circular-menu-left.active .menu-item:nth-child(1) {
-          transform: translate3d(-1em, -7em, 0);
+        .circular-menu.active ha-icon {
+          transition: all 3s ease;
         }
-        .circular-menu.circular-menu-left.active .menu-item:nth-child(2) {
-          transform: translate3d(3.5em, -6.3em, 0);
+        .circular-menu.active ha-icon.icon {
+          display: none;
         }
-        .circular-menu.circular-menu-left.active .menu-item:nth-child(3) {
-          transform: translate3d(6.5em, -3.2em, 0);
+        .circular-menu.active ha-icon.close {
+          display: block;
         }
-        .circular-menu.circular-menu-left.active .menu-item:nth-child(4) {
-          transform: translate3d(7em, 1em, 0);
-        }
+        .circular-menu.active .menu-item { transform: translate(var(--x), var(--y)); }
       </style>
       <div id="circularMenu" class="circular-menu${leftMenuEnabled}">
         <a class="floating-btn">
-        <ha-icon icon="${_config.icon}"></ha-icon>
+        <ha-icon class="icon" icon="${_config.icon}"></ha-icon>
+        <ha-icon class="close" icon="mdi:close"></ha-icon>
         </a>
         <menu class="items-wrapper hidden"></menu>
       </div>
     `;
 
     const container = this.shadowRoot.querySelector('.items-wrapper');
+    const itemAngle = 140 / _config.items.length;
+    const angleOffset = [47, 6, -1, -7][_config.items.length - 1];
 
     _config.items.slice(0, 4).forEach((itemConfig, index) => {
+      const angle = itemAngle * index - 90 + angleOffset;
+
       const item = document.createElement('div');
       item.classList.add('menu-item');
       item.innerHTML = `<ha-icon icon="${itemConfig.icon}"></ha-icon>`;
       item.title = itemConfig.alt || `Item ${index + 1}`;
+
+      const radius = 7;
+      let x = radius * Math.cos((angle * Math.PI) / 180);
+      let y = radius * Math.sin((angle * Math.PI) / 180);
+      if (!_config.left) x = -x;
+      item.style.setProperty('--x', `${x}em`);
+      item.style.setProperty('--y', `${y}em`);
 
       item.addEventListener('click', () => {
         if (
@@ -237,7 +241,7 @@ class CircleMenuCard extends HTMLElement {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      timeoutId = setTimeout(closeMenu, 3000);
+      timeoutId = setTimeout(closeMenu, this._config.auto_close);
     };
 
     this._floatingBtnClickListener = (event) => {
@@ -249,7 +253,9 @@ class CircleMenuCard extends HTMLElement {
       if (!isActive) {
         circularMenu.classList.add('active');
         container.classList.remove('hidden');
-        startCloseTimer();
+        if ('auto_close' in this._config) {
+          startCloseTimer();
+        }
       }
     };
 
@@ -308,9 +314,6 @@ class CircleMenuCard extends HTMLElement {
     return {
       left: false,
       icon: 'mdi:menu',
-      button_color: '#3498db',
-      icon_color: 'white',
-      menu_background_color: '#3498db',
       items: [
         {
           icon: 'mdi:lightbulb',
@@ -340,3 +343,9 @@ window.customCards.push({
   preview: false,
   documentationURL: 'https://github.com/bhuebschen/circle-menu-card',
 });
+
+console.info(
+  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.2   ',
+  'color: white; background: #3498db; font-weight: bold; padding: 5px 0;',
+  'color: white; background: #333; font-weight: bold; padding: 5px 0;',
+);
