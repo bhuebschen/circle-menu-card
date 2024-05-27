@@ -126,7 +126,7 @@ MIT © [Benedikt Hübschen][bhuebschen]
 
 <!-- References -->
 
-[preview]: https://github.com/bhuebschen/circle-menu-card/assets/1864448/c1652338-c48a-4df4-8396-1dcda323d032
+[preview]: https://github.com/bhuebschen/circle-menu-card/assets/1864448/39352877-43fa-49ce-a517-079e3783a95d
 [home-assistant]: https://www.home-assistant.io/
 [hacs]: https://hacs.xyz
 [latest-release]: https://github.com/bhuebschen/circle-menu-card/releases/latest
