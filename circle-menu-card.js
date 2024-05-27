@@ -448,7 +448,6 @@ class CircleMenuCardEditor extends HTMLElement {
     this.render();
   }
 
-
   render() {
     if (!this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
@@ -460,7 +459,6 @@ class CircleMenuCardEditor extends HTMLElement {
       delete localConfig.json_config;
     } catch (error) {
       alert(error);
-      
     }
     this.shadowRoot.innerHTML = `
       <div class="card-config">
