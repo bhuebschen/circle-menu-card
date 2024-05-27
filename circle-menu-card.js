@@ -354,15 +354,18 @@ class CircleMenuCard extends HTMLElement {
 
   // Erstellen Sie eine Funktion, die den Zustand der Entität überprüft und die Klasse hinzufügt/entfernt
   updateActiveClass(entityId) {
-    const entityState = this._hass.states[entityId].state;
-    const menuItem = this.shadowRoot.querySelector(
-      `.menu-item[data-entity-id="${entityId}"]`,
-    );
-
-    if (this.positiveStates.includes(entityState)) {
-      menuItem.classList.add('active');
-    } else {
-      menuItem.classList.remove('active');
+    try {
+      const entityState = this._hass.states[entityId].state;
+      const menuItem = this.shadowRoot.querySelector(
+        `.menu-item[data-entity-id="${entityId}"]`,
+      );
+      if (this.positiveStates.includes(entityState)) {
+        menuItem.classList.add('active');
+      } else {
+        menuItem.classList.remove('active');
+      }
+    } catch (error) {
+      //
     }
   }
 
@@ -428,12 +431,35 @@ class CircleMenuCard extends HTMLElement {
     return 0; // This card doesn't occupy any space
   }
 
-  /*static getConfigElement() {
+  static getConfigElement() {
     return document.createElement('circle-menu-card-editor');
-  }*/
+  }
 }
 
 customElements.define('circle-menu-card', CircleMenuCard);
+
+class CircleMenuCardEditor extends HTMLElement {
+  setConfig(config) {
+    this._config = config;
+    this.render();
+  }
+
+  render() {
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
+
+    debugger;
+    this.shadowRoot.innerHTML = `
+      <div class="card-config">
+          <h3>JSON Configuration</h3>
+          <pre>${JSON.stringify(this._config, null, 2)}</pre>
+      </div>
+    `;
+  }
+}
+
+customElements.define('circle-menu-card-editor', CircleMenuCardEditor);
 
 window.customCards = window.customCards || [];
 window.customCards.push({

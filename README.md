@@ -82,21 +82,30 @@ items:
 |------------------------|-------------------------------------------------------------------------------------------------------|------------------------------|
 | `left`                 | Whether to position the menu on the left side of the screen                                           | `false`                      |
 | `icon`                 | The icon to be displayed on the floating button                                                       | `'mdi:menu'`                 |
-| `button_color`         | Background color of the floating button                                                               | var(--primary-color)                  |
-| `icon_color`           | Color of the icon on the floating button                                                              | var(--text-primary-color)                    |
-| `menu_background_color`| Background color of the menu                                                                    | var(--primary-color)                     |
-| `auto_close`           | Closes the menu after a timeout in milliseconds                                                                    | ``                     |
-| `items`                | Array of menu items. Each item should contain `icon`, `alt`, and `action` properties.                  | `[]`                         |
+| `button_color`         | Background color of the floating button                                                               | var(--primary-color)         |
+| `icon_color`           | Color of the icon on the floating button                                                              | var(--text-primary-color)    |
+| `menu_background_color`| Background color of the menu                                                                          | var(--primary-color)         |
+| `auto_close`           | Closes the menu after a timeout in milliseconds                                                       | ``                           |
+| `json_config`          | Load an external json-file with the menu and items configuration                                      | ``                           |
+| `item_active_color`    | When using call_service, this defines the background color of a menu item whose destination entity is 'positive'. | var(--accent-color)                           |
+| `positive_states`      | Defines an array of 'positive' states for entities to be highlighted. | 'true', 'on', 'open', 'active', 'detected', 'occupied', 'unlocked', 'home', 'above_horizon', 'ready' |
+| `json_config`          | Load an external json-file with the menu and items configuration                                      | ``                           |
+| `items`                | Array of menu items. Each item should contain `icon`, `alt`, and `action` properties.                 | `[]`                         |
 | `items[].icon`         | Icon for the menu item                                                                                | `''`                         |
 | `items[].alt`          | Alt text for the menu item                                                                            | `''`                         |
-| `items[].action`       | Action to be performed when the menu item is clicked. Can be either `'navigate'` or `'call-service'`.  | `''`                         |
-| `items[].action.navigation_path` | Path to navigate to if `action` is `'navigate'`                                                  | `''`                         |
+| `items[].action`       | Action to be performed when the menu item is clicked. Can be either `'navigate'` or `'call-service'`. | `''`                         |
+| `items[].action.navigation_path` | Path to navigate to if `action` is `'navigate'`                                                   | `''`                         |
 | `items[].action.service`         | Service to call if `action` is `'call-service'`                                                   | `''`                         |
 | `items[].action.service_data`    | Service data to pass if `action` is `'call-service'`                                              | `{}`                         |
 
 ### Usage:
 1. Clicking the floating button toggles the visibility of the circular menu.
 2. Each menu item performs a predefined action, such as controlling devices or navigating to other dashboards.
+
+### Global configuration:
+You can store the configuration in a JSON file to provide a global setup for all menus. Use json_config to load the configuration into the circle-menu-card instance.
+
+Any additional parameters provided will override the parameters from the JSON configuration.
 
 ### Credits:
 - The Circle Menu Card is inspired by various circular menu implementations and is built as a custom Lovelace card for Home Assistant.
