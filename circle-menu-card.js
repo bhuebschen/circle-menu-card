@@ -6,15 +6,32 @@ class CircleMenuCard extends HTMLElement {
     };
   }
 
+  _localConfig = {};
+  _data = {};
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this._menuListenersAttached = false;
+    this.positiveStates = [
+      true,
+      'true',
+      'on',
+      'open',
+      'active',
+      'detected',
+      'occupied',
+      'unlocked',
+      'home',
+      'above_horizon',
+      'ready',
+    ];
+    this._localConfig = {};
   }
 
   connectedCallback() {
     this.render();
-    if (!this._menuListenersAttached) {
+    if (!this._menuListenersAttached && this.shadowRoot) {
       this.setupMenuListener();
       this._menuListenersAttached = true;
     }
@@ -25,29 +42,33 @@ class CircleMenuCard extends HTMLElement {
     this._menuListenersAttached = false;
   }
 
-  setConfig(config) {
-    if (
-      !config.items ||
-      !Array.isArray(config.items) ||
-      config.items.length === 0
-    ) {
-      throw new Error('You need to define an array of items');
-    }
+  jsonConcat(o1, o2) {
+    return Object.assign({}, o1, o2);
+  }
 
+  setConfig(config) {
     this._config = config;
+    this._localConfig = this._config;
     this.render();
   }
 
   render() {
+    this.removeMenuListener();
     if (!this.shadowRoot) return;
 
-    const { _config } = this;
-    const leftMenuEnabled = _config.left ? ' circular-menu-left' : '';
+    if (this._config.json_config && this._data) {
+      this._localConfig = this.jsonConcat(this._data, this._config);
+    }
+
+    const leftMenuEnabled = this._localConfig.left ? ' circular-menu-left' : '';
     const primaryColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--primary-color')
       .trim();
     const textPrimaryColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--text-primary-color')
+      .trim();
+    const accentColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent-color')
       .trim();
 
     this.shadowRoot.innerHTML = `
@@ -66,9 +87,9 @@ class CircleMenuCard extends HTMLElement {
           width: 3.5em;
           height: 3.5em;
           border-radius: 50%;
-          background-color: ${_config.button_color || primaryColor};
+          background-color: ${this._localConfig.button_color || primaryColor};
           box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-          color: ${_config.icon_color || textPrimaryColor} !important;
+          color: ${this._localConfig.icon_color || textPrimaryColor} !important;
           text-align: center;
           line-height: 2.6;
           cursor: pointer;
@@ -81,7 +102,7 @@ class CircleMenuCard extends HTMLElement {
           box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
         }
         .circular-menu menu ha-icon, .circular-menu menu ha-icon ha-svg-icon {
-          fill: ${_config.icon_color || textPrimaryColor};
+          fill: ${this._localConfig.icon_color || textPrimaryColor};
         }
         .circular-menu .floating-btn ha-icon {
           font-size: 1.3em;
@@ -100,7 +121,7 @@ class CircleMenuCard extends HTMLElement {
           top: 0;
           right: 0;
           z-index: -2;
-          background-color: ${_config.menu_background_color || primaryColor};
+          background-color: ${this._localConfig.menu_background_color || primaryColor};
           transition: all .3s ease;
         }
         .circular-menu.active:after {
@@ -132,15 +153,15 @@ class CircleMenuCard extends HTMLElement {
         .circular-menu .menu-item:hover {
           background-color: rgba(0, 0, 0, 0.3);
         }
+        .circular-menu .menu-item.active {
+          background-color: ${this._localConfig.item_active_color || accentColor};
+        }
         .circular-menu.active .menu-item {
           transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .circular-menu.circular-menu-left {
           right: auto;
           left: 1em;
-        }
-        .circular-menu.circular-menu-left .floating-btn, .circular-menu.circular-menu-left:after {
-          background-color: ${_config.menu_background_color || primaryColor};
         }
         .circular-menu.circular-menu-left.active .floating-btn a {
           transform: rotate(45deg);
@@ -158,29 +179,67 @@ class CircleMenuCard extends HTMLElement {
       </style>
       <div id="circularMenu" class="circular-menu${leftMenuEnabled}">
         <a class="floating-btn">
-        <ha-icon class="icon" icon="${_config.icon}"></ha-icon>
+        <ha-icon class="icon" icon="${this._localConfig.icon}"></ha-icon>
         <ha-icon class="close" icon="mdi:close"></ha-icon>
         </a>
         <menu class="items-wrapper hidden"></menu>
       </div>
     `;
 
-    const container = this.shadowRoot.querySelector('.items-wrapper');
-    const itemAngle = 140 / _config.items.length;
-    const angleOffset = [47, 6, -1, -7][_config.items.length - 1];
+    if (this._localConfig.positive_states) {
+      this.positiveStates = this._localConfig.positive_states;
+    }
 
-    _config.items.slice(0, 4).forEach((itemConfig, index) => {
+    if (this._config.json_config) {
+      if (Object.keys(this._data).length == 0 && this._config.json_config) {
+        fetch(this._config.json_config)
+          .then((res) => res.json())
+          .then((data) => {
+            this._data = data;
+            this.render();
+          });
+      }
+      if (this._localConfig.items) {
+        this.loadMenuItems();
+      }
+    } else {
+      if (this._localConfig.items) {
+        this.loadMenuItems();
+      }
+    }
+    this.setupMenuListener();
+  }
+
+  loadMenuItems() {
+    const container = this.shadowRoot.querySelector('.items-wrapper');
+    container.innerHTML = '';
+    const itemAngle = 140 / this._localConfig.items.length;
+    const angleOffset = [47, 6, -1, -7][this._localConfig.items.length - 1];
+
+    this._localConfig.items.slice(0, 4).forEach((itemConfig, index) => {
       const angle = itemAngle * index - 90 + angleOffset;
 
       const item = document.createElement('div');
       item.classList.add('menu-item');
       item.innerHTML = `<ha-icon icon="${itemConfig.icon}"></ha-icon>`;
       item.title = itemConfig.alt || `Item ${index + 1}`;
-
+      if (
+        itemConfig.action.action === 'call-service' &&
+        itemConfig.action.service_data &&
+        itemConfig.action.service_data.entity_id
+      ) {
+        item.setAttribute(
+          'data-entity-id',
+          itemConfig.action.service_data.entity_id,
+        );
+        setTimeout(() => {
+          this.updateActiveClass(itemConfig.action.service_data.entity_id);
+        }, 100);
+      }
       const radius = 7;
       let x = radius * Math.cos((angle * Math.PI) / 180);
       let y = radius * Math.sin((angle * Math.PI) / 180);
-      if (!_config.left) x = -x;
+      if (!this._localConfig.left) x = -x;
       item.style.setProperty('--x', `${x}em`);
       item.style.setProperty('--y', `${y}em`);
 
@@ -199,7 +258,7 @@ class CircleMenuCard extends HTMLElement {
           itemConfig.action.action === 'call-service' &&
           itemConfig.action.service
         ) {
-          this.hass.callService(
+          this._hass.callService(
             itemConfig.action.service.split('.')[0],
             itemConfig.action.service.split('.')[1],
             itemConfig.action.service_data || {},
@@ -223,6 +282,7 @@ class CircleMenuCard extends HTMLElement {
   }
 
   setupMenuListener() {
+    this.removeMenuListener();
     const container = this.shadowRoot.querySelector('.items-wrapper');
     const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
     const circularMenu = this.shadowRoot.querySelector('#circularMenu');
@@ -241,7 +301,7 @@ class CircleMenuCard extends HTMLElement {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      timeoutId = setTimeout(closeMenu, this._config.auto_close);
+      timeoutId = setTimeout(closeMenu, this._localConfig.auto_close);
     };
 
     this._floatingBtnClickListener = (event) => {
@@ -253,7 +313,7 @@ class CircleMenuCard extends HTMLElement {
       if (!isActive) {
         circularMenu.classList.add('active');
         container.classList.remove('hidden');
-        if ('auto_close' in this._config) {
+        if ('auto_close' in this._localConfig) {
           startCloseTimer();
         }
       }
@@ -274,7 +334,7 @@ class CircleMenuCard extends HTMLElement {
 
     this._containerMouseLeaveListener = () => {
       container.classList.remove('hidden');
-      if ('auto_close' in this._config) {
+      if ('auto_close' in this._localConfig) {
         startCloseTimer();
       }
     };
@@ -290,6 +350,23 @@ class CircleMenuCard extends HTMLElement {
     container.addEventListener('mouseenter', this._containerMouseEnterListener);
     container.addEventListener('mouseleave', this._containerMouseLeaveListener);
     document.addEventListener('click', this._documentClickListener);
+  }
+
+  // Erstellen Sie eine Funktion, die den Zustand der Entität überprüft und die Klasse hinzufügt/entfernt
+  updateActiveClass(entityId) {
+    try {
+      const entityState = this._hass.states[entityId].state;
+      const menuItem = this.shadowRoot.querySelector(
+        `.menu-item[data-entity-id="${entityId}"]`,
+      );
+      if (this.positiveStates.includes(entityState)) {
+        menuItem.classList.add('active');
+      } else {
+        menuItem.classList.remove('active');
+      }
+    } catch (error) {
+      //
+    }
   }
 
   removeMenuListener() {
@@ -331,12 +408,68 @@ class CircleMenuCard extends HTMLElement {
     };
   }
 
+  set hass(hass) {
+    if (this._hass && this._localConfig && this._localConfig.items) {
+      for (const item of this._localConfig.items) {
+        try {
+          if (
+            item.action.service_data &&
+            item.action.service_data.entity_id &&
+            this._hass.states[item.action.service_data.entity_id].state !==
+              hass.states[item.action.service_data.entity_id].state
+          ) {
+            setTimeout(() => {
+              this.updateActiveClass(item.action.service_data.entity_id);
+            }, 100);
+          }
+        } catch (error) {
+          //
+        }
+      }
+    }
+
+    this._hass = hass;
+  }
+
   getCardSize() {
     return 0; // This card doesn't occupy any space
+  }
+
+  static getConfigElement() {
+    return document.createElement('circle-menu-card-editor');
   }
 }
 
 customElements.define('circle-menu-card', CircleMenuCard);
+
+class CircleMenuCardEditor extends HTMLElement {
+  setConfig(config) {
+    this._config = config;
+    this.render();
+  }
+
+  render() {
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
+
+    let localConfig = JSON.parse(JSON.stringify(this._config));
+    try {
+      delete localConfig.type;
+      delete localConfig.json_config;
+    } catch (error) {
+      alert(error);
+    }
+    this.shadowRoot.innerHTML = `
+      <div class="card-config">
+          <h3>JSON Configuration</h3>
+          <pre>${JSON.stringify(localConfig, null, 2)}</pre>
+      </div>
+    `;
+  }
+}
+
+customElements.define('circle-menu-card-editor', CircleMenuCardEditor);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
@@ -348,7 +481,7 @@ window.customCards.push({
 });
 
 console.info(
-  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.2   ',
+  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.3   ',
   'color: white; background: #3498db; font-weight: bold; padding: 5px 0;',
   'color: white; background: #333; font-weight: bold; padding: 5px 0;',
 );
