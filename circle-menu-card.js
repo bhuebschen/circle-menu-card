@@ -57,7 +57,7 @@ class CircleMenuCard extends HTMLElement {
     if (!this.shadowRoot) return;
 
     if (this._config.config_storage && this._data) {
-      this._localConfig = this.jsonConcat(this._config, this._data);
+      this._localConfig = this.jsonConcat(this._data, this._config);
     }
 
     const leftMenuEnabled = this._localConfig.left ? ' circular-menu-left' : '';
@@ -282,6 +282,7 @@ class CircleMenuCard extends HTMLElement {
   }
 
   setupMenuListener() {
+    this.removeMenuListener();
     const container = this.shadowRoot.querySelector('.items-wrapper');
     const floatingBtn = this.shadowRoot.querySelector('.floating-btn');
     const circularMenu = this.shadowRoot.querySelector('#circularMenu');
