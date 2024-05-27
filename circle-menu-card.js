@@ -471,7 +471,7 @@ window.customCards.push({
 });
 
 console.info(
-  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.2   ',
+  '%c  CIRCLE-MENU-CARD  \n%c   Version: 1.0.3   ',
   'color: white; background: #3498db; font-weight: bold; padding: 5px 0;',
   'color: white; background: #333; font-weight: bold; padding: 5px 0;',
 );
