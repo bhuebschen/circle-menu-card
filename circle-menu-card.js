@@ -466,6 +466,7 @@ class CircleMenuCardEditor extends HTMLElement {
           <pre>${JSON.stringify(localConfig, null, 2)}</pre>
       </div>
     `;
+    localConfig = this._config;
   }
 }
 
