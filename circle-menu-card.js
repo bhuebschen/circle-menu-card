@@ -56,7 +56,7 @@ class CircleMenuCard extends HTMLElement {
     this.removeMenuListener();
     if (!this.shadowRoot) return;
 
-    if (this._config.config_storage && this._data) {
+    if (this._config.json_config && this._data) {
       this._localConfig = this.jsonConcat(this._data, this._config);
     }
 
@@ -190,9 +190,9 @@ class CircleMenuCard extends HTMLElement {
       this.positiveStates = this._localConfig.positive_states;
     }
 
-    if (this._config.config_storage) {
-      if (Object.keys(this._data).length == 0 && this._config.config_storage) {
-        fetch(this._config.config_storage)
+    if (this._config.json_config) {
+      if (Object.keys(this._data).length == 0 && this._config.json_config) {
+        fetch(this._config.json_config)
           .then((res) => res.json())
           .then((data) => {
             this._data = data;
