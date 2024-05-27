@@ -411,15 +411,19 @@ class CircleMenuCard extends HTMLElement {
   set hass(hass) {
     if (this._hass && this._localConfig && this._localConfig.items) {
       for (const item of this._localConfig.items) {
-        if (
-          item.action.service_data &&
-          item.action.service_data.entity_id &&
-          this._hass.states[item.action.service_data.entity_id].state !==
-            hass.states[item.action.service_data.entity_id].state
-        ) {
-          setTimeout(() => {
-            this.updateActiveClass(item.action.service_data.entity_id);
-          }, 100);
+        try {
+          if (
+            item.action.service_data &&
+            item.action.service_data.entity_id &&
+            this._hass.states[item.action.service_data.entity_id].state !==
+              hass.states[item.action.service_data.entity_id].state
+          ) {
+            setTimeout(() => {
+              this.updateActiveClass(item.action.service_data.entity_id);
+            }, 100);
+          }
+        } catch (error) {
+          //
         }
       }
     }
@@ -444,14 +448,20 @@ class CircleMenuCardEditor extends HTMLElement {
     this.render();
   }
 
+
   render() {
     if (!this.shadowRoot) {
       this.attachShadow({ mode: 'open' });
     }
 
-    localConfig = this._config;
-    delete localConfig.type;
-    delete localConfig.json_config;
+    let localConfig = JSON.parse(JSON.stringify(this._config));
+    try {
+      delete localConfig.type;
+      delete localConfig.json_config;
+    } catch (error) {
+      alert(error);
+      
+    }
     this.shadowRoot.innerHTML = `
       <div class="card-config">
           <h3>JSON Configuration</h3>
