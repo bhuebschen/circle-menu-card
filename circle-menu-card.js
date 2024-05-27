@@ -449,11 +449,13 @@ class CircleMenuCardEditor extends HTMLElement {
       this.attachShadow({ mode: 'open' });
     }
 
-    debugger;
+    localConfig = this._config;
+    delete localConfig.type;
+    delete localConfig.json_config;
     this.shadowRoot.innerHTML = `
       <div class="card-config">
           <h3>JSON Configuration</h3>
-          <pre>${JSON.stringify(this._config, null, 2)}</pre>
+          <pre>${JSON.stringify(localConfig, null, 2)}</pre>
       </div>
     `;
   }
