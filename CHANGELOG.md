@@ -1,6 +1,6 @@
 ### [1.0.3](https://github.com/bhuebschen/circle-menu-card/compare/v1.0.2...v1.0.3) (2024-05-27)
 
-* Menu items can show the state of en entity
+* Menu items can show the state of an entity
 * 'positive' entities can have a custom color
 * Configuration can be stored in /www and loaded with 'json_config'.
 * 'Visual Editor' shows JSON-Configuration.
