@@ -5,7 +5,8 @@
   "main": "dist/circle-menu-card.js",
   "scripts": {
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest"
   },
   "keywords": [
     "home-assistant",
@@ -74,5 +75,14 @@
   "bugs": {
     "url": "https://github.com/bhuebschen/circle-menu-card/issues"
   },
-  "homepage": "https://github.com/bhuebschen/circle-menu-card#readme"
+  "homepage": "https://github.com/bhuebschen/circle-menu-card#readme",
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
 }
